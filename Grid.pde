@@ -142,7 +142,20 @@ class SimGridController extends GridController {
     
     //if (row == 0) { println("   
     rect(x1 + offsetX, y1 + offsetY, sw , sh);
-    if (ENABLE_LED) { opc.setPixel(pixelId, gpixels[pixelId].rgb); }
+    if (ENABLE_LED) {
+      int opcId = opcTransform(pixelId);
+      opc.setPixel(opcId, gpixels[pixelId].rgb);
+    }
+  }
+
+  /*
+   * OPC strips are 64 per rail. We are using 30-length strips, so we have 4 missing LEDs every 2 strips.
+   *
+   * This will translate the sequential pixel ID to the opc ID
+   */
+  int opcTransform(int pixelId) {
+    int rails = floor(pixelId / 60);
+    return pixelId + rails * 4;
   }
   
   void drawPixelPad() {

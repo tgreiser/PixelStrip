@@ -9,7 +9,7 @@ import java.io.*;
 
 class Sequence {
   int step = 0;
-  Boolean[][] data = new Boolean[1][100];
+  Boolean[][] data = new Boolean[1][30];
   int initial_pixel = -1;
   color c;
   boolean flipX;
@@ -30,7 +30,7 @@ class Sequence {
   
   void addStep() {
     step++;
-    Boolean[][] newdata = new Boolean[data.length + 1][100];
+    Boolean[][] newdata = new Boolean[data.length + 1][30];
     System.arraycopy(data, 0, newdata, 0, data.length);
     data = newdata;
     initStep(data.length - 1);

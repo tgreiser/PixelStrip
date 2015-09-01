@@ -30,18 +30,31 @@ class PadKontrol extends MidiController implements SimpleMidiListener {
     
     int br = 0;
     int bc = 0;
+    int ledRow = 0;
     if (pitch >= 48) {
       bc = pitch % 48;
+      ledRow = pitch - 48;
     } else if (pitch >= 44) {
       br = 1;
       bc = pitch % 44;
+      ledRow = pitch - 40;
     } else if (pitch >= 40) {
       br = 2;
       bc = pitch % 40;
+      ledRow = pitch - 32;
     } else {
       br = 3;
       bc = pitch % 36;
+      ledRow = pitch - 24;
     }
+    
+    // Pitch 48-51 = strip 0-3
+    // pitch 44-47 = strip 4-7
+    // pitch 40-43 = strip 8-11
+    // pitch 36-39 = strip 12-15
+    
+    
+    
     //println("BC: " + bc + " BR:" + br);
     
     color c = grid.getColor(velocity);
@@ -51,7 +64,8 @@ class PadKontrol extends MidiController implements SimpleMidiListener {
    
     println("bc: " + bc + " br: " + br +" fX: " + flipX + " fY: " + flipY);
     
-    grid.addSeq(c, new PVector(0, br * 3), flipX, flipY);
+    //grid.addSeq(c, new PVector(0, br * 3), flipX, flipY);
+    grid.addSeq(c, new PVector(0, ledRow), false, false);
   }
   
   void noteOff(int channel, int pitch, int velocity) {}
