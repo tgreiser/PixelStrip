@@ -4,6 +4,9 @@ class EditorController extends SimGridController {
   Button save;
   Button load;
   Button newseq;
+  ColorWheel cw;
+  color _c;
+  int e_length = 0;
   
   Sequence sequence;
 
@@ -27,21 +30,30 @@ class EditorController extends SimGridController {
       .setColorBackground(color(0))
       .setSize(114, 38);
     grid.setFont(newseq.getCaptionLabel());
+    
+    _c = #ff0000;
+    cw = c5.addColorWheel("picker", 5, 300, 200)
+          .setRGB(this._c)
+          ;
       
     sequence = new Sequence();
     sequence.init();
+    
+    e_length = this.rows * this.cols;
   }
   
   void hide() {
     save.setVisible(false);
     load.setVisible(false);
     newseq.setVisible(false);
+    cw.setVisible(false);
   }
   
   void show() {
     save.setVisible(true);
     load.setVisible(true);
     newseq.setVisible(true);
+    cw.setVisible(true);
   }
   
   void draw() {
@@ -51,9 +63,8 @@ class EditorController extends SimGridController {
       for (int iC = 0; iC < cols; iC++) {
         gpixels[iP].clear();
         
-        if (sequence.stepHas(iP)) {
-          gpixels[iP].set(color(255, 0, 0));
-        }
+        color c = sequence.stepHas(iP);
+        gpixels[iP].set(c);
         
         this.drawPixel(iP++, iR, iC);
       }
@@ -68,6 +79,8 @@ class EditorController extends SimGridController {
     } else if (theEvent.isFrom(newseq)) {
       sequence = new Sequence();
       sequence.init();
+    } else if (theEvent.isFrom(cw)) {
+      this._c = c5.get(ColorWheel.class,"picker").getRGB();
     }
   }
   
@@ -76,17 +89,19 @@ class EditorController extends SimGridController {
   void mouseReleased() {
     if (mouseX < grid.offsetX || mouseY < grid.offsetY) { return; }
     println("mouseX " + str(mouseX) + " offsetX " + str(grid.offsetX) + " gpixels length " + str(gpixels.length));
-    int iR = (mouseX - int(grid.offsetX)) / int(sw);
-    int iC = (mouseY - int(grid.offsetY)) / int(sh);
-    int iP = (iC * grid.cols) + iR;
-    if (iP > gpixels.length - 1) { return; }
+    int iC = (mouseX - int(grid.offsetX)) / int(sw);
+    int iR = (mouseY - int(grid.offsetY)) / int(sh);
+    int iP = (iR * grid.cols) + iC;
     println("Got " + str(iC) + " x " + str(iR) + " - " + str(iP));
+    println("Limit rows " + str(edit.rows) + " cols " + str(edit.cols));
+    if (iP > this.e_length - 1) { return; }
+    if (iR >= edit.rows || iC >= edit.cols) { return; }
+    
+    println("Passed!");
     
     if (gpixels[iP].rgb == color(0, 0, 0)) {
-      sequence.addPixel(iP);
-      println("Set red");
-      //gpixels[iP].set(color(255, 0, 0));
-      //println(gpixels[iP].rgb);
+      println("Set custom color");
+      sequence.addPixel(iP, this._c);
     } else {
       println("Set black");
       sequence.removePixel(iP);

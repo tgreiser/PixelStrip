@@ -113,7 +113,10 @@ class SequenceLoadList extends LoadList {
      // lbi.setColorBackground(this.colorBG);
     }
     this.count = files.length;
-    this.selected(0);
+    println("Initialized " + str(this.count) + " sequences");
+    if (this.count > 0) {
+      this.selected(0);
+    }
   }
   
   void selected(int currentIndex) {

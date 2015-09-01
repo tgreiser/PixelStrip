@@ -166,10 +166,10 @@ class SimGridController extends GridController {
         gpixels[iP].clear();
         
         for (int iX = 0; iX < sequences.size(); iX++) {
-          if (sequences.get(iX).stepHas(iP)) {
+          color c = sequences.get(iX).stepHas(iP);
+          if (c != #000000) {
             //println("Setting pixel " + str(iP));
            // + " R: " + str(red(sequences.get(iX).c)));
-            color c = sequences.get(iX).c;
             float mult = pow(1 - this.decay_rate, sequences.get(iX).step);
             color c2 = color(red(c) * mult, green(c) * mult, blue(c) * mult);
             //println("step: " + sequences.get(iX).step + " mult:" + mult +" decay_rate" + this.decay_rate);
