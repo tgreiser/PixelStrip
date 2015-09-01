@@ -52,6 +52,6 @@ class Keyboard {
     
     println("bc: " + bc + " br: " + br +" fX: " + flipX + " fY: " + flipY);
     
-    grid.addSeq(c, new PVector(bc * 3, br * 3), flipX, flipY);
+    grid.addSeq(c, new PVector(bc * 3, br * 3), flipX, flipY, 0);
   }
 }

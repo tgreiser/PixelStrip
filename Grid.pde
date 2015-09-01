@@ -38,11 +38,13 @@ class GridController extends Controller {
   flipX - reflect along X axis - boolean
   flipY - feflect along Y axis - boolean
   */
-  void addSeq(color c, PVector position, boolean flipX, boolean flipY) {
+  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num) {
     if (sequences.size() > 32) { return; }
-    
+    println("Running addSeq with " + str(patch_num));
     Sequence s = new Sequence();
-    s.loadData(new File(config.get("dataPath")+"sequences\\" + this.seq_id));
+    String seq = grid.seqList.getSequence(patch_num);
+    println("Got sequence " + seq);
+    s.loadData(new File(config.get("dataPath")+"sequences\\" + seq));
     s.c = c;
     s.flipX = flipX;
     s.flipY = flipY;
@@ -56,7 +58,7 @@ class GridController extends Controller {
     
     //println("initial Y:" + this.calcRow(s.initial_pixel) + " initX: " + this.calcCol(s.initial_pixel));
     //println("posY: " + str(int(position.y)) + " posX: " + position.x);
-    println("offset: " + str(s.offset) + " co: " + str(s.offsetCols) + " ro: " + str(s.offsetRows) + " flipX: " + flipX + " flipY: " + flipY);
+    //println("offset: " + str(s.offset) + " co: " + str(s.offsetCols) + " ro: " + str(s.offsetRows) + " flipX: " + flipX + " flipY: " + flipY);
     
     // s.offset...
     sequences.add(s);
@@ -228,8 +230,8 @@ class PlayGridController extends SimGridController {
     
   }
   
-  void addSeq(color c, PVector position, boolean flipX, boolean flipY) {
-    super.addSeq(c, position, flipX, flipY);
+  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num) {
+    super.addSeq(c, position, flipX, flipY, patch_num);
     this.minute = minute();
   }
   
@@ -246,7 +248,7 @@ class PlayGridController extends SimGridController {
         boolean flipY = false;
         if (bc > 1) { flipY = true; }
         if (br <= 1) { flipX = true; }
-        super.addSeq(this.getColor(c), new PVector(bc * 3, br * 3), flipX, flipY);
+        super.addSeq(this.getColor(c), new PVector(bc * 3, br * 3), flipX, flipY, 0);
       }
     }
   }

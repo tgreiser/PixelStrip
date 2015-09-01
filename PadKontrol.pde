@@ -10,8 +10,11 @@ class PadKontrol extends MidiController implements SimpleMidiListener {
     MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
     ArrayList<java.lang.String> ins = new ArrayList<java.lang.String>();
     ins.addAll(java.util.Arrays.asList(MidiBus.availableInputs()));
-    
-    if (ins.contains("padKONTROL 1 PORT A")) {
+  
+    if (ins.contains("loopMIDI Port")) {
+       myBus = new MidiBus(_app, "loopMIDI Port", "loopMIDI Port", "PSYN"); // Create a new MidiBus (PApplet, in_device_name, out_device_name)
+       myBus.addMidiListener(this);
+    } else if (ins.contains("padKONTROL 1 PORT A")) {
       myBus = new MidiBus(_app, "padKONTROL 1 PORT A", "padKONTROL 1 CTRL"); // Create a new MidiBus (PApplet, in_device_name, out_device_name)
       myBus.addMidiListener(this);
     } else {
@@ -57,15 +60,16 @@ class PadKontrol extends MidiController implements SimpleMidiListener {
     
     //println("BC: " + bc + " BR:" + br);
     
-    color c = grid.getColor(velocity);
     boolean flipX = false;
     boolean flipY = false;
     if (bc == 1 || bc == 3) { flipY = true; }
    
-    println("bc: " + bc + " br: " + br +" fX: " + flipX + " fY: " + flipY);
+    println("bc: " + bc + " br: " + br +" channel + " + str(channel));
     
     //grid.addSeq(c, new PVector(0, br * 3), flipX, flipY);
-    grid.addSeq(c, new PVector(0, ledRow), false, false);
+    if (grid != null) {
+      grid.addSeq(#000000, new PVector(0, ledRow), false, false, channel);
+    }
   }
   
   void noteOff(int channel, int pitch, int velocity) {}

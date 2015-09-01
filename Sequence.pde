@@ -136,7 +136,7 @@ class Sequence {
     this.step = 0;
     initial_pixel = initial;
     data = array;
-    println("Loaded with initial pixel " + initial_pixel);
+    //println("Loaded with initial pixel " + initial_pixel);
   }
 }
 

@@ -119,6 +119,16 @@ class SequenceLoadList extends LoadList {
     }
   }
   
+  String getSequence(int currentIndex) {
+    Map< String , Object > li = this.list.getItem(currentIndex);
+    if (grid != null && li != null) { 
+      return li.get("text").toString();
+    }
+    return "";
+  }
+  
+  /*
+  Disabling the selector, change via MIDI channel
   void selected(int currentIndex) {
     super.selected(currentIndex);
     Map< String , Object > li = this.list.getItem(currentIndex);
@@ -128,6 +138,7 @@ class SequenceLoadList extends LoadList {
       println("Loaded " + grid.seq_id);
     }
   }
+  */
 }
 
 class PaletteLoadList extends LoadList {
