@@ -63,12 +63,13 @@ class PadKontrol extends MidiController implements SimpleMidiListener {
     boolean flipX = false;
     boolean flipY = false;
     if (bc == 1 || bc == 3) { flipY = true; }
+    int delay = int(map(velocity, 0, 127, 200, 1));
    
     println("bc: " + bc + " br: " + br +" channel + " + str(channel));
     
     //grid.addSeq(c, new PVector(0, br * 3), flipX, flipY);
     if (grid != null) {
-      grid.addSeq(#000000, new PVector(0, ledRow), false, false, channel);
+      grid.addSeq(#000000, new PVector(0, ledRow), false, false, channel, delay);
     }
   }
   

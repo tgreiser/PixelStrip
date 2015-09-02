@@ -32,13 +32,14 @@ class GridController extends Controller {
   }
   
   /*
-  seq_id - filename - 001.seq
   color c - sequence color - color type
   position - start position - PVector type
-  flipX - reflect along X axis - boolean
-  flipY - feflect along Y axis - boolean
+  flipX *disabled* - reflect along X axis - boolean
+  flipY *disabled* - reflect along Y axis - boolean
+  patch_num - index number of the data sequence to use
+  delay - ms to delay between each step (1-200 is good range)
   */
-  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num) {
+  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num, int delay) {
     if (sequences.size() > 32) { return; }
     println("Running addSeq with " + str(patch_num));
     Sequence s = new Sequence();
@@ -48,6 +49,9 @@ class GridController extends Controller {
     s.c = c;
     s.flipX = flipX;
     s.flipY = flipY;
+    s.start = millis();
+    s.delay = delay;
+    if (s.delay < 1) { s.delay = 1; }
     
     // need to figure out the offset
     // compare start position (PVector) against sequence.initial_pixel (0-99)
@@ -89,8 +93,6 @@ class SimGridController extends GridController {
   float sh; // square height .. *heh*
   boolean colortest = true;
   Palette p;
-  int startSecond = 0;
-  int startMinute = 0;
    
   void setup(PApplet _app) {
     println("SimGrid super");
@@ -102,8 +104,6 @@ class SimGridController extends GridController {
     println("Setting up simgrid: sw=" + str(sw) + " sh=" + str(sh));
     p = new Palette();
     p.load("NES.tsv");
-    startSecond = second();
-    startMinute = minute();
     println("Done simgrid");
   }
   
@@ -116,11 +116,7 @@ class SimGridController extends GridController {
   }
   
   void drawColorTest() {
-    int seconds = second() - this.startSecond;
-    int minutes = minute() - this.startMinute;
-    seconds = seconds + 60 * minutes;
-    println("Seconds: " + seconds + " startSec: " + this.startSecond);
-    if (seconds >= 2) {
+    if (millis() >= 4000) {
       colortest = false;
     } else {
       int iX = 0;
@@ -163,11 +159,18 @@ class SimGridController extends GridController {
   void drawPixelPad() {
     stroke(255);
     int iP = 0;
+    int seq_size = sequences.size();
+    println("Getting steps...");
+    
+    for (int iX = 0; iX < seq_size; iX++) {
+      sequences.get(iX).getStep();
+    }
+    println("Got steps " + str(seq_size));
+    
     for (int iR = 0; iR < rows; iR++) {
       for (int iC = 0; iC < cols; iC++) {
         gpixels[iP].clear();
-        
-        for (int iX = 0; iX < sequences.size(); iX++) {
+        for (int iX = 0; iX < seq_size; iX++) {
           color c = sequences.get(iX).stepHas(iP);
           if (c != #000000) {
             //println("Setting pixel " + str(iP));
@@ -182,15 +185,13 @@ class SimGridController extends GridController {
         this.drawPixel(iP++, iR, iC);
       }
     }
-    
 
     for (int iX = 0; iX < sequences.size(); iX++) {
-      int last = sequences.get(iX).step;
-      sequences.get(iX).nextStep();
-      if (sequences.get(iX).step == last) { sequences.remove(iX); }
+      if (sequences.get(iX).ended()) {
+        sequences.remove(iX);
+      }
     }
     if (ENABLE_LED) { opc.writePixels(); }
-    delay(this.clockDelay);
   }
 
   // input is 0-127
@@ -207,7 +208,7 @@ class PlayGridController extends SimGridController {
   PaletteLoadList paletteList;
   MyCheckbox cbOptions;
   MySlider decaySlider;
-  int minute;
+  int last;
   
   void setup(PApplet _app) {
     super.setup(_app);
@@ -230,14 +231,14 @@ class PlayGridController extends SimGridController {
     
   }
   
-  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num) {
-    super.addSeq(c, position, flipX, flipY, patch_num);
-    this.minute = minute();
+  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num, int delay) {
+    super.addSeq(c, position, flipX, flipY, patch_num, delay);
+    this.last = millis();
   }
   
   void draw() {
     super.draw();
-    if (minute() > this.minute+1 || (minute() == 0 && this.minute == 58) || (minute() == 1 && this.minute == 59)) {
+    if (millis() - this.last > 20000) {
       // chance to add a sequence
       float r = random(100);
       if (r > 90) {
@@ -248,7 +249,7 @@ class PlayGridController extends SimGridController {
         boolean flipY = false;
         if (bc > 1) { flipY = true; }
         if (br <= 1) { flipX = true; }
-        super.addSeq(this.getColor(c), new PVector(bc * 3, br * 3), flipX, flipY, 0);
+        super.addSeq(this.getColor(c), new PVector(bc * 3, br * 3), flipX, flipY, 0, int(random(200)));
       }
     }
   }

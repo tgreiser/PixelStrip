@@ -11,6 +11,8 @@ class Sequence {
   int step = 0;
   color[][] data = new color[1][grid.cols];
   int initial_pixel = -1;
+  int start = 0;
+  int delay = 1;
   color c;
   boolean flipX;
   boolean flipY;
@@ -26,6 +28,20 @@ class Sequence {
     for (int iX = 0; iX < data[iS].length; iX++) {
       data[iS][iX] = #000000;
     }
+  }
+  
+  /*
+   * Calculate how many steps have passed since start (based on delay), then set the right step
+   */
+  void getStep() {
+    int iX = floor((millis() - this.start) / this.delay);
+    if (iX >= data.length) { return; }
+    this.step = iX;
+  }
+  
+  boolean ended() {
+    int end = start + delay * data.length;
+    return millis() > end;
   }
   
   void addStep() {
