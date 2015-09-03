@@ -16,29 +16,29 @@ class EditorController extends SimGridController {
     super.setup(_app);
     
     save = c5.addButton("Save")
-      .setPosition(400, 800)
+      .setPosition(20, 950)
       .setColorBackground(color(0))
       .setSize(114, 38);
     grid.setFont(save.getCaptionLabel());
       
     load = c5.addButton("Load")
-      .setPosition(520, 800)
+      .setPosition(140, 950)
       .setColorBackground(color(0))
       .setSize(114, 38);
     grid.setFont(load.getCaptionLabel());
       
     newseq = c5.addButton("New")
-      .setPosition(640, 800)
+      .setPosition(260, 950)
       .setColorBackground(color(0))
       .setSize(114, 38);
     grid.setFont(newseq.getCaptionLabel());
     
     p = new Palette();
     //p.load("NES.tsv");
-    paletteList = new PaletteLoadList(c5, "Palette", new PVector(170, 620), new PVector(300, 320));
+    paletteList = new PaletteLoadList(c5, "Palette", new PVector(width*.75, height * .5), new PVector(width * .25, height * .5));
     
     _c = #ff0000;
-    cw = c5.addColorWheel("picker", 5, 300, 200)
+    cw = c5.addColorWheel("picker", int(width * .5), int(height * .1), height / 5)
           .setRGB(this._c)
           ;
       
@@ -65,6 +65,10 @@ class EditorController extends SimGridController {
   }
   
   void draw() {
+    
+    paletteList.list.setPosition(width*.75, height * .5);
+    paletteList.list.setSize(int(width * .25), int(height * .5));
+    
     stroke(255);
     int iP = 0;
     for (int iR = 0; iR < rows; iR++) {

@@ -103,6 +103,7 @@ class SimGridController extends GridController {
   }
   
   void draw() {
+    
     if (colortest) {
       drawColorTest();
     } else {
@@ -216,6 +217,16 @@ class PlayGridController extends SimGridController {
   }
   
   void draw() {
+    this.w = width - 10;
+    sw = this.w / cols;
+    this.h = height * .667;
+    sh = this.h / rows;
+    
+    decaySlider.s.setPosition(width * .25, height * .667 + 10);
+    decaySlider.s.setSize(50, int(height * .25));
+    
+    cbOptions.cb.setPosition(5, height - 100);
+    
     super.draw();
     if (millis() - this.last > 20000) {
       // chance to add a sequence

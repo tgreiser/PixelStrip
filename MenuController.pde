@@ -24,6 +24,10 @@ class MenuController extends Controller {
       ;
   }
   
+  void draw() {
+    mode.setPosition(5, height - 200);
+  }
+  
   void controlEvent(ControlEvent theEvent) {
     if (theEvent.isFrom(mode)) {
       float val = theEvent.getValue(); 
