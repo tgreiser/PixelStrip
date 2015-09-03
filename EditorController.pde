@@ -66,8 +66,16 @@ class EditorController extends SimGridController {
   
   void draw() {
     
+    this.w = width - 10;
+    sw = this.w / cols;
+    
     paletteList.list.setPosition(width*.75, height * .5);
     paletteList.list.setSize(int(width * .25), int(height * .5));
+    
+    cw.setPosition(width * .5, height * .1);
+    save.setPosition(20, height-50);
+    load.setPosition(140, height-50);
+    newseq.setPosition(260, height-50);
     
     stroke(255);
     int iP = 0;

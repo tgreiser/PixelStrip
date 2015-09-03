@@ -39,7 +39,7 @@ class GridController extends Controller {
   delay - ms to delay between each step (1-200 is good range)
   */
   void addSeq(PVector position, boolean flipX, boolean flipY, int patch_num, int delay) {
-    if (sequences.size() > 32) { return; }
+    if (sequences.size() > MAX_SEQUENCES) { return; }
     println("Running addSeq with " + str(patch_num));
     if (patch_num > grid.seqList.count) { patch_num = 0; }
     Sequence s = new Sequence();
@@ -222,7 +222,7 @@ class PlayGridController extends SimGridController {
     this.h = height * .667;
     sh = this.h / rows;
     
-    decaySlider.s.setPosition(width * .25, height * .667 + 10);
+    decaySlider.s.setPosition(width * .25, height * .667 + 16);
     decaySlider.s.setSize(50, int(height * .25));
     
     cbOptions.cb.setPosition(5, height - 100);

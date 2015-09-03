@@ -22,6 +22,7 @@ boolean ENABLE_LED = true;
 boolean DRAW_GRID = true;
 boolean FULL_SCREEN = false;
 int INITIAL_DELAY = 100;
+int MAX_SEQUENCES = 64;
 
 PadKontrol midi;
 Rectangle monitor = new Rectangle();
