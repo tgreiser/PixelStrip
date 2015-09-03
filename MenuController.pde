@@ -7,7 +7,7 @@ class MenuController extends Controller {
     super.setup(_app);
     
     mode = c5.addRadioButton("Mode")
-      .setPosition(640, 620)
+      .setPosition(5, 800)
       .setColorBackground(color(55))
       .setSize(60, 40)
       .addItem(" Edit", 1.0)

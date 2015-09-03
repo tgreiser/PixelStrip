@@ -5,6 +5,8 @@ class EditorController extends SimGridController {
   Button load;
   Button newseq;
   ColorWheel cw;
+  PaletteLoadList paletteList;
+  Palette p;
   color _c;
   int e_length = 0;
   
@@ -31,6 +33,10 @@ class EditorController extends SimGridController {
       .setSize(114, 38);
     grid.setFont(newseq.getCaptionLabel());
     
+    p = new Palette();
+    //p.load("NES.tsv");
+    paletteList = new PaletteLoadList(c5, "Palette", new PVector(170, 620), new PVector(300, 320));
+    
     _c = #ff0000;
     cw = c5.addColorWheel("picker", 5, 300, 200)
           .setRGB(this._c)
@@ -47,6 +53,7 @@ class EditorController extends SimGridController {
     load.setVisible(false);
     newseq.setVisible(false);
     cw.setVisible(false);
+    paletteList.list.setVisible(false);
   }
   
   void show() {
@@ -54,6 +61,7 @@ class EditorController extends SimGridController {
     load.setVisible(true);
     newseq.setVisible(true);
     cw.setVisible(true);
+    paletteList.list.setVisible(true);
   }
   
   void draw() {
@@ -81,6 +89,10 @@ class EditorController extends SimGridController {
       sequence.init();
     } else if (theEvent.isFrom(cw)) {
       this._c = c5.get(ColorWheel.class,"picker").getRGB();
+    } else if (theEvent.name().equals(paletteList.name())) {
+      int pick = (int)theEvent.getValue();
+      println("Picked " + pick);
+      paletteList.selected(pick);
     }
   }
   
@@ -121,6 +133,12 @@ class EditorController extends SimGridController {
       // sequence add step, advance, then clear
       sequence.addStep();
     }
+  }
+  
+  // Picks a color from the current palette
+  color getColor(int input) {
+    //if (this.velocity_colors == false) { input = int(random(128)); }
+    return p.pick(input);
   }
   
   void save() {

@@ -43,8 +43,6 @@ class Keyboard {
   }
   
   void addSeq(int br, int bc) {
-    
-    color c = grid.getColor(int(random(128)));
     boolean flipX = false;
     boolean flipY = false;
     if (bc > 1) { flipY = true; }
@@ -52,6 +50,6 @@ class Keyboard {
     
     println("bc: " + bc + " br: " + br +" fX: " + flipX + " fY: " + flipY);
     
-    grid.addSeq(c, new PVector(bc * 3, br * 3), flipX, flipY, 0, 20);
+    grid.addSeq(new PVector(bc * 3, br * 3), flipX, flipY, 0, 20);
   }
 }

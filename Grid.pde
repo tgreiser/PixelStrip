@@ -32,21 +32,20 @@ class GridController extends Controller {
   }
   
   /*
-  color c - sequence color - color type
   position - start position - PVector type
   flipX *disabled* - reflect along X axis - boolean
   flipY *disabled* - reflect along Y axis - boolean
   patch_num - index number of the data sequence to use
   delay - ms to delay between each step (1-200 is good range)
   */
-  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num, int delay) {
+  void addSeq(PVector position, boolean flipX, boolean flipY, int patch_num, int delay) {
     if (sequences.size() > 32) { return; }
     println("Running addSeq with " + str(patch_num));
+    if (patch_num > grid.seqList.count) { patch_num = 0; }
     Sequence s = new Sequence();
     String seq = grid.seqList.getSequence(patch_num);
     println("Got sequence " + seq);
     s.loadData(new File(config.get("dataPath")+"sequences\\" + seq));
-    s.c = c;
     s.flipX = flipX;
     s.flipY = flipY;
     s.start = millis();
@@ -84,7 +83,6 @@ class SimGridController extends GridController {
   float h = 600; //600;
   float offsetX = 5;
   float offsetY = 5;
-  boolean velocity_colors;
   float decay_rate = 0.0;
   PFont pfont = createFont("Terminal",40,false); // use true/false for smooth/no-smooth
   ControlFont font = new ControlFont(pfont,241);
@@ -92,7 +90,6 @@ class SimGridController extends GridController {
   float sw; // square width
   float sh; // square height .. *heh*
   boolean colortest = true;
-  Palette p;
    
   void setup(PApplet _app) {
     println("SimGrid super");
@@ -102,8 +99,6 @@ class SimGridController extends GridController {
     sw = w / cols;
     sh = h / rows;
     println("Setting up simgrid: sw=" + str(sw) + " sh=" + str(sh));
-    p = new Palette();
-    p.load("NES.tsv");
     println("Done simgrid");
   }
   
@@ -122,7 +117,7 @@ class SimGridController extends GridController {
       int iX = 0;
       for (int iC = 0; iC < cols; iC++) {
         for (int iR = 0; iR < rows; iR++) {
-          color c = getColor(int(random(127)));
+          color c = edit.getColor(int(random(127)));
           gpixels[iX].clear();
           gpixels[iX].set(c);
           this.drawPixel(iX, iR, iC);
@@ -193,19 +188,10 @@ class SimGridController extends GridController {
     }
     if (ENABLE_LED) { opc.writePixels(); }
   }
-
-  // input is 0-127
-  
-  // Picks a color from the current palette
-  color getColor(int input) {
-    if (this.velocity_colors == false) { input = int(random(128)); }
-    return p.pick(input);
-  }
 }
 
 class PlayGridController extends SimGridController {
-  SequenceLoadList seqList;
-  PaletteLoadList paletteList;
+  SequenceList seqList = new SequenceList();
   MyCheckbox cbOptions;
   MySlider decaySlider;
   int last;
@@ -213,26 +199,19 @@ class PlayGridController extends SimGridController {
   void setup(PApplet _app) {
     super.setup(_app);
     
-    seqList = new SequenceLoadList(c5, "Sequence", new PVector(5, 620), new PVector(160, 320));
-    paletteList = new PaletteLoadList(c5, "Palette", new PVector(170, 620), new PVector(300, 320));
-    
-    decaySlider = new MySlider(c5, "Decay", new PVector(480, 620), new PVector(50, 320));
+    decaySlider = new MySlider(c5, "Decay", new PVector(300, 620), new PVector(50, 320));
     decaySlider.s.setMax(0.333);
     grid.setFont(decaySlider.s.getCaptionLabel());
     grid.setFont(decaySlider.s.getValueLabel());
     
-    cbOptions = new MyCheckbox(c5, "Options", new PVector(640, 720), new PVector(60, 40));
-    cbOptions.cb.addItem(" Show Grid", 0);
+    cbOptions = new MyCheckbox(c5, "Options", new PVector(5, 900), new PVector(60, 40));
+    cbOptions.cb.addItem(" Enable LEDs", 0);
     cbOptions.cb.toggle(0);
     grid.setFont(cbOptions.cb.getItem(0).getCaptionLabel());
-    cbOptions.cb.addItem(" Velocity Colors", 1);
-    cbOptions.cb.toggle(1);
-    grid.setFont(cbOptions.cb.getItem(1).getCaptionLabel());
-    
   }
   
-  void addSeq(color c, PVector position, boolean flipX, boolean flipY, int patch_num, int delay) {
-    super.addSeq(c, position, flipX, flipY, patch_num, delay);
+  void addSeq(PVector position, boolean flipX, boolean flipY, int patch_num, int delay) {
+    super.addSeq(position, flipX, flipY, patch_num, delay);
     this.last = millis();
   }
   
@@ -242,28 +221,23 @@ class PlayGridController extends SimGridController {
       // chance to add a sequence
       float r = random(100);
       if (r > 90) {
-        int c = int(random(128));
         int bc = int(random(4));
         int br = int(random(4));
         boolean flipX = false;
         boolean flipY = false;
         if (bc > 1) { flipY = true; }
         if (br <= 1) { flipX = true; }
-        super.addSeq(this.getColor(c), new PVector(bc * 3, br * 3), flipX, flipY, 0, int(random(200)));
+        super.addSeq(new PVector(bc * 3, br * 3), flipX, flipY, 0, int(random(200)));
       }
     }
   }
   
   void hide() {
-    seqList.list.setVisible(false);
-    paletteList.list.setVisible(false);
     cbOptions.cb.setVisible(false);
     decaySlider.s.setVisible(false);
   }
   
   void show() {
-    seqList.list.setVisible(true);
-    paletteList.list.setVisible(true);
     cbOptions.cb.setVisible(true);
     decaySlider.s.setVisible(true);
   }
@@ -271,22 +245,10 @@ class PlayGridController extends SimGridController {
   void controlEvent(ControlEvent theEvent) {
     super.controlEvent(theEvent);
     
-    if (theEvent.name().equals(seqList.name())) {
-      int pick = (int)theEvent.getValue();
-      println("Picked " + pick);
-      println("File " + seqList.list.getItem(pick));
-      
-      //seqList.list.getItem(pick).setColorBackground(color(0, 255, 255));
-      seqList.selected(pick);
-    } else if (theEvent.name().equals(paletteList.name())) {
-      int pick = (int)theEvent.getValue();
-      println("Picked " + pick);
-      paletteList.selected(pick);
-    } else if (theEvent.name().equals(cbOptions.cb.getName())) {
+    if (theEvent.name().equals(cbOptions.cb.getName())) {
       println(cbOptions.cb.getArrayValue());
       float[] optVals = theEvent.getArrayValue();
-      DRAW_GRID = optVals[0] == 1.0;
-      this.velocity_colors = optVals[1] == 1.0;
+      ENABLE_LED = optVals[0] == 1.0;
     } else if (theEvent.name().equals(decaySlider.s.getName())) {
       this.decay_rate = theEvent.getValue();
     }

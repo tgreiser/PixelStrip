@@ -69,12 +69,15 @@ class PadKontrol extends MidiController implements SimpleMidiListener {
     
     //grid.addSeq(c, new PVector(0, br * 3), flipX, flipY);
     if (grid != null) {
-      grid.addSeq(#000000, new PVector(0, ledRow), false, false, channel, delay);
+      grid.addSeq(new PVector(0, ledRow), false, false, channel, delay);
     }
   }
   
   void noteOff(int channel, int pitch, int velocity) {}
   
+  /*
+  The new method uses MIDI channel # to select the sequence.
+  */
   void controllerChange(int channel, int number, int value) {
     // Receive a controllerChange
     println();
@@ -86,9 +89,10 @@ class PadKontrol extends MidiController implements SimpleMidiListener {
     
     if (number == 20) {
       // pick a sequence
-      grid.seqList.selected(int(map(value, 0, 127, 0, grid.seqList.length()-1)));
+      //grid.seqList.selected(int(map(value, 0, 127, 0, grid.seqList.size()-1)));
     } else if (number == 21) {
       grid.clockDelay = int(map(value, 0, 127, 1, 200));
     }
   }
+
 }

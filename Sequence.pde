@@ -1,10 +1,35 @@
 import java.util.*;
 import java.io.*;
 
+
+class SequenceList {
+  ArrayList<String> sequences = new ArrayList<String>();
+  int count = 0;
+  
+  void load() {
+    File file = new File(config.get("dataPath") + "\\sequences\\");
+    File[] files = file.listFiles();
+    this.sequences.clear();
+    for (int i = 0; i < files.length; i++) {
+      this.sequences.add(files[i].getName());
+     // lbi.setColorBackground(this.colorBG);
+    }
+    this.count = this.sequences.size();
+    println("Initialized " + str(this.count) + " sequences");
+  }
+  
+  String getSequence(int currentIndex) {
+    if (grid != null && this.sequences != null) { 
+      return this.sequences.get(currentIndex);
+    }
+    return "";
+  }
+}
+
 /**
  * Data schema:
  * Variable # of steps
- * Each step is 100 boolean values
+ * Each step is # color values where # is the # of columns in the grid
  */
 
 class Sequence {
@@ -13,7 +38,6 @@ class Sequence {
   int initial_pixel = -1;
   int start = 0;
   int delay = 1;
-  color c;
   boolean flipX;
   boolean flipY;
   int offset = 0;

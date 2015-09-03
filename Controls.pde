@@ -164,7 +164,7 @@ class PaletteLoadList extends LoadList {
     Map<String, Object> li = this.list.getItem(currentIndex);
     if (grid != null && li != null) {
       String pname = li.get("text").toString(); 
-      grid.p.load(pname);
+      edit.p.load(pname);
       println("Loaded " + pname);
     }
   } 
