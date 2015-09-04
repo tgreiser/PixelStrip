@@ -172,20 +172,21 @@ class PaletteLoadList extends LoadList {
 
 class ColorBin {
   Group g;
-  color[] colors = new color[8];
+  int max = 32;
+  color[] colors = new color[max];
   
   ColorBin(ControlP5 cp, String title, PVector pos, PVector size) {
     this.g = c5.addGroup(title)
       .setPosition(pos.x, pos.y)
       .setBackgroundColor(#333333)
       .setSize(int(size.x), int(size.y));
-    for (int iX = 0; iX < 8; iX++) {
+    for (int iX = 0; iX < max; iX++) {
       colors[iX] = #000000;
     }
   }
   
   void array_pad(color c) {
-    for (int iX = 7; iX >= 1; iX--) {
+    for (int iX = max-1; iX >= 1; iX--) {
       colors[iX] = colors[iX-1];
     }
     colors[0] = c;
@@ -193,6 +194,7 @@ class ColorBin {
   
   void add(color c) {
     for (int iX = 0; iX < colors.length; iX++) {
+      println(str(colors[iX]) + " == " + str(c));
       if (colors[iX] == c) { return; }
     }
     this.array_pad(c);
@@ -206,7 +208,7 @@ class ColorBin {
   void drawColors() {
     int count = colors.length;
     PVector gsize = this.getSize();
-    PVector size = new PVector(gsize.x / 4, gsize.y / 4);
+    PVector size = new PVector(gsize.x / 8, gsize.y / 8);
     PVector gpos = getGroupPosition();
     for (int iX = 0; iX < count; iX++) {
       PVector pos = getPosition(size, iX);
@@ -225,13 +227,17 @@ class ColorBin {
    Layout is
    1 2 3 4
    5 6 7 8
+   
+   0 1 2 3 4 5 6 7
+   8 9 101112131415
+   1617181920212223
+   2425262728293031
+  
    */
   PVector getPosition(PVector size, int index) {
     PVector pos = new PVector(0, 0);
-    if (index >= 4) {
-      pos.y = size.y;
-      index -= 4;
-    }
+    pos.y = floor((index) / 8) * size.y;
+    while (index > 7) { index -= 8; }
     pos.x = (index) * size.x;
     return pos;
   }
@@ -244,14 +250,13 @@ class ColorBin {
     if (click.x < 0 || click.y < 0) { return -1; }
     PVector size = getSize();
     println("prediv sizeX " + size.x + " sizeY " + size.y);
-    size.div(4);
+    size.div(8);
  
-    int ry = click.y > size.y ? 1 : 0;
+    int ry = floor(click.y / size.y);
     int rx = floor(click.x / size.x);
-    if (ry > 1 || rx > 3) { return -1; }
+    if (ry > 3 || rx > 7) { return -1; }
     println("rx=" + str(rx) + " ry=" +str(ry) + " clickX " + str(click.x) + " clickY " + str(click.y) + " sizeX " + size.x + " sizeY " + size.y);
-    int index = rx;
-    if (ry == 1) index += 4;
+    int index = rx + (8 * (ry));
     return index;
   }
   

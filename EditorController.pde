@@ -8,6 +8,7 @@ class EditorController extends SimGridController {
   ColorBin cb;
   PaletteLoadList paletteList;
   Palette p;
+  Group iconStrip;
   color _c;
   int e_length = 0;
   
@@ -43,11 +44,64 @@ class EditorController extends SimGridController {
           .setRGB(this._c)
           ;
     cb = new ColorBin(c5, "Color History / Palette", new PVector(0, 0), new PVector(0, 0));
+    
+    iconStrip = c5.addGroup("Pattern Controls")
+      .setPosition(0, 0)
+      .setSize(0, 0);
+    
+    // Tooltips don't work in processing 2.2.1+, bummer
+    c5.addIcon("shift10Left", 10)
+      .setPosition(0, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f100,#00f100)
+      .registerTooltip("Shift pattern 10 steps left")
+      .setGroup(iconStrip);
       
+    c5.addIcon("shiftLeft", 10)
+      .setPosition(50, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f104,#00f104)
+      .registerTooltip("Shift pattern 1 step left")
+      .setGroup(iconStrip);
+      
+    c5.addIcon("flipY", 10)
+      .setPosition(100, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f021,#00f021)
+      .registerTooltip("Flip pattern")
+      .setGroup(iconStrip);
+      
+    c5.addIcon("shiftRight", 10)
+      .setPosition(150, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f105,#00f105)
+      .registerTooltip("Shift pattern 1 step right")
+      .setGroup(iconStrip);
+      
+    c5.addIcon("shift10Right", 10)
+      .setPosition(200, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f101,#00f101)
+      .registerTooltip("Shift pattern 10 steps right")
+      .setGroup(iconStrip);
+    
     sequence = new Sequence();
     sequence.init();
     
     e_length = this.rows * this.cols;
+  }
+  
+  void icon(boolean theValue) {
+    println("Got icon ", theValue);
+  }
+  
+  void shift10Left(boolean theValue) {
+    println("Got shift10Left");
   }
   
   void hide() {
@@ -56,6 +110,7 @@ class EditorController extends SimGridController {
     newseq.setVisible(false);
     cw.setVisible(false);
     paletteList.list.setVisible(false);
+    iconStrip.setVisible(false);
   }
   
   void show() {
@@ -64,6 +119,7 @@ class EditorController extends SimGridController {
     newseq.setVisible(true);
     cw.setVisible(true);
     paletteList.list.setVisible(true);
+    iconStrip.setVisible(true);
   }
   
   void draw() {
@@ -80,6 +136,8 @@ class EditorController extends SimGridController {
     save.setPosition(20, height-50);
     load.setPosition(140, height-50);
     newseq.setPosition(260, height-50);
+    iconStrip.setPosition(0, height * .1);
+    iconStrip.setSize(int(width * .25), int(height * .5));
     
     stroke(255);
     int iP = 0;
@@ -98,6 +156,7 @@ class EditorController extends SimGridController {
   }
   
   void controlEvent(ControlEvent theEvent) {
+    println("Got controlEvent");
     if (theEvent.isFrom(save)) {
       save();
     } else if (theEvent.isFrom(load)) {
@@ -111,6 +170,21 @@ class EditorController extends SimGridController {
       int pick = (int)theEvent.getValue();
       println("Picked " + pick);
       paletteList.selected(pick);
+      for (int iX = 0; iX < p.size(); iX++) {
+        cb.add(p.colors[iX]);
+      }
+    } else {
+      if (theEvent.isFrom(c5.get(Icon.class, "shift10Left"))) {
+        sequence.shiftData(-10);
+      } else if (theEvent.isFrom(c5.get(Icon.class, "shiftLeft"))) {
+        sequence.shiftData(-1);
+      } else if (theEvent.isFrom(c5.get(Icon.class, "shiftRight"))) {
+        sequence.shiftData(1);
+      } else if (theEvent.isFrom(c5.get(Icon.class, "shift10Right"))) {
+        sequence.shiftData(10);
+      } else if (theEvent.isFrom(c5.get(Icon.class, "flipY"))) {
+        sequence.flipData();
+      }
     }
   }
   

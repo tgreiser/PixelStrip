@@ -55,6 +55,43 @@ class Sequence {
   }
   
   /*
+   Shift the current step # of pixels. Negative values shift to the left, positive to the right. Values beyond the grid bounds are truncated.
+  */
+  void shiftData(int amount) {
+    color[] d;
+    if (amount > 0) {
+      d = new color[amount];
+      for (int iX = 0; iX < amount; iX++) {
+        println("Set " + str(iX) + " to black");
+        d[iX] = #000000;
+      }
+      data[this.step] = concat(d, subset(data[this.step], 0, data[this.step].length - amount));
+      println(data[this.step]);
+      return;
+    } else {
+      d = data[this.step];
+    }
+    int iA = amount < 0 ? 0 : amount;
+    for (int iX = iA; iX < data[this.step].length; iX++) {
+      if (iX-amount >= data[this.step].length) {
+        println("Set " + str(iX) + " to black");
+        data[this.step][iX] = #000000;
+      } else {
+        println("Set " + str(iX) + " to " + str(iX-amount) + " " + str(d[iX-amount]));
+        data[this.step][iX] = d[iX-amount];
+      }
+    }
+  }
+  
+  void flipData() {
+    color[] d = new color[data[this.step].length];
+    arrayCopy(data[this.step], 0, d, 0, data[this.step].length);
+    for (int iX = 0; iX < data[this.step].length; iX++) {
+      data[this.step][iX] = d[data[this.step].length - iX - 1];
+    }
+  }
+  
+  /*
    * Calculate how many steps have passed since start (based on delay), then set the right step
    */
   void getStep() {
