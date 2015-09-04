@@ -18,7 +18,7 @@ Controller[] ctrls;
 StringDict config;
 String server = "127.0.0.1";
 //"192.168.0.12";
-boolean ENABLE_LED = true;
+boolean ENABLE_LED = false;
 boolean DRAW_GRID = true;
 boolean FULL_SCREEN = false;
 int INITIAL_DELAY = 100;

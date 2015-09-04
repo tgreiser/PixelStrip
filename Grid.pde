@@ -207,7 +207,7 @@ class PlayGridController extends SimGridController {
     
     cbOptions = new MyCheckbox(c5, "Options", new PVector(5, 900), new PVector(60, 40));
     cbOptions.cb.addItem(" Enable LEDs", 0);
-    cbOptions.cb.toggle(0);
+    //cbOptions.cb.toggle(0);
     grid.setFont(cbOptions.cb.getItem(0).getCaptionLabel());
   }
   

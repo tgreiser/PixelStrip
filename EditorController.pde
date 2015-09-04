@@ -5,6 +5,7 @@ class EditorController extends SimGridController {
   Button load;
   Button newseq;
   ColorWheel cw;
+  ColorBin cb;
   PaletteLoadList paletteList;
   Palette p;
   color _c;
@@ -35,12 +36,13 @@ class EditorController extends SimGridController {
     
     p = new Palette();
     //p.load("NES.tsv");
-    paletteList = new PaletteLoadList(c5, "Palette", new PVector(width*.75, height * .5), new PVector(width * .25, height * .5));
+    paletteList = new PaletteLoadList(c5, "Palettes", new PVector(width*.75, height * .5), new PVector(width * .25, height * .5));
     
     _c = #ff0000;
-    cw = c5.addColorWheel("picker", int(width * .5), int(height * .1), height / 5)
+    cw = c5.addColorWheel("color picker", int(width * .5), int(height * .1), height / 5)
           .setRGB(this._c)
           ;
+    cb = new ColorBin(c5, "Color History / Palette", new PVector(0, 0), new PVector(0, 0));
       
     sequence = new Sequence();
     sequence.init();
@@ -73,6 +75,8 @@ class EditorController extends SimGridController {
     paletteList.list.setSize(int(width * .25), int(height * .5));
     
     cw.setPosition(width * .5, height * .1);
+    cb.g.setPosition(width * .75, height * .1);
+    //cb.g.setSize(int(width * .25), int( (height * .5) - sh - 16));
     save.setPosition(20, height-50);
     load.setPosition(140, height-50);
     newseq.setPosition(260, height-50);
@@ -88,7 +92,9 @@ class EditorController extends SimGridController {
         
         this.drawPixel(iP++, iR, iC);
       }
-    } 
+    }
+    
+    cb.draw();
   }
   
   void controlEvent(ControlEvent theEvent) {
@@ -100,7 +106,7 @@ class EditorController extends SimGridController {
       sequence = new Sequence();
       sequence.init();
     } else if (theEvent.isFrom(cw)) {
-      this._c = c5.get(ColorWheel.class,"picker").getRGB();
+      this._c = cw.getRGB();
     } else if (theEvent.name().equals(paletteList.name())) {
       int pick = (int)theEvent.getValue();
       println("Picked " + pick);
@@ -111,6 +117,10 @@ class EditorController extends SimGridController {
     // calculate the grid # and set the pixel to red, or back to black
     // need to accound for grid.offsetX/Y
   void mouseReleased() {
+    int click = cb.detectClick();
+    println("mouseReleased: " + str(click));
+    if (click != -1 && cb.colors[click] != #000000) { cw.setRGB(cb.colors[click]); }
+    
     if (mouseX < grid.offsetX || mouseY < grid.offsetY) { return; }
     println("mouseX " + str(mouseX) + " offsetX " + str(grid.offsetX) + " gpixels length " + str(gpixels.length));
     int iC = (mouseX - int(grid.offsetX)) / int(sw);
@@ -126,6 +136,7 @@ class EditorController extends SimGridController {
     if (gpixels[iP].rgb == color(0, 0, 0)) {
       println("Set custom color");
       sequence.addPixel(iP, this._c);
+      cb.add(this._c);
     } else {
       println("Set black");
       sequence.removePixel(iP);

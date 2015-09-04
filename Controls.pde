@@ -169,3 +169,93 @@ class PaletteLoadList extends LoadList {
     }
   } 
 }
+
+class ColorBin {
+  Group g;
+  color[] colors = new color[8];
+  
+  ColorBin(ControlP5 cp, String title, PVector pos, PVector size) {
+    this.g = c5.addGroup(title)
+      .setPosition(pos.x, pos.y)
+      .setBackgroundColor(#333333)
+      .setSize(int(size.x), int(size.y));
+    for (int iX = 0; iX < 8; iX++) {
+      colors[iX] = #000000;
+    }
+  }
+  
+  void array_pad(color c) {
+    for (int iX = 7; iX >= 1; iX--) {
+      colors[iX] = colors[iX-1];
+    }
+    colors[0] = c;
+  }
+  
+  void add(color c) {
+    for (int iX = 0; iX < colors.length; iX++) {
+      if (colors[iX] == c) { return; }
+    }
+    this.array_pad(c);
+    drawColors();
+  }
+  
+  void draw() {
+    drawColors();
+  }
+  
+  void drawColors() {
+    int count = colors.length;
+    PVector gsize = this.getSize();
+    PVector size = new PVector(gsize.x / 4, gsize.y / 4);
+    PVector gpos = getGroupPosition();
+    for (int iX = 0; iX < count; iX++) {
+      PVector pos = getPosition(size, iX);
+      pos.add(gpos);
+      fill(colors[iX]);
+      rect(pos.x, pos.y, size.x, size.y);
+    }
+  }
+  
+  PVector getGroupPosition() {
+    float[] _gpos = this.g.getPosition();
+    return new PVector(_gpos[0], _gpos[1]);
+  }
+  
+  /*
+   Layout is
+   1 2 3 4
+   5 6 7 8
+   */
+  PVector getPosition(PVector size, int index) {
+    PVector pos = new PVector(0, 0);
+    if (index >= 4) {
+      pos.y = size.y;
+      index -= 4;
+    }
+    pos.x = (index) * size.x;
+    return pos;
+  }
+  
+  int detectClick() {
+    PVector click = new PVector(mouseX, mouseY);
+    println("prediv clickX " + click.x + " clickY " + click.y);
+    click.sub(getGroupPosition());
+     println("post clickX " + click.x + " clickY " + click.y);
+    if (click.x < 0 || click.y < 0) { return -1; }
+    PVector size = getSize();
+    println("prediv sizeX " + size.x + " sizeY " + size.y);
+    size.div(4);
+ 
+    int ry = click.y > size.y ? 1 : 0;
+    int rx = floor(click.x / size.x);
+    if (ry > 1 || rx > 3) { return -1; }
+    println("rx=" + str(rx) + " ry=" +str(ry) + " clickX " + str(click.x) + " clickY " + str(click.y) + " sizeX " + size.x + " sizeY " + size.y);
+    int index = rx;
+    if (ry == 1) index += 4;
+    return index;
+  }
+  
+  PVector getSize() {
+    return new PVector(width * .25, (height * .5) - grid.sh + 16);
+  }
+}
