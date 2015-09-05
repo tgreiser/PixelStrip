@@ -9,6 +9,8 @@ class EditorController extends SimGridController {
   PaletteLoadList paletteList;
   Palette p;
   Group iconStrip;
+  Group stepControls;
+  Textlabel stepLabel;
   color _c;
   int e_length = 0;
   
@@ -16,6 +18,11 @@ class EditorController extends SimGridController {
 
   void setup(PApplet _app) {
     super.setup(_app);
+    
+    sequence = new Sequence();
+    sequence.init();
+    
+    e_length = this.rows * this.cols;
     
     save = c5.addButton("Save")
       .setPosition(20, 950)
@@ -89,11 +96,52 @@ class EditorController extends SimGridController {
       .setFontIcons(#00f101,#00f101)
       .registerTooltip("Shift pattern 10 steps right")
       .setGroup(iconStrip);
+      
+    stepControls = c5.addGroup("Step Controls")
+      .setPosition(0, 0)
+      .setSize(0, 0);
+      
+    c5.addIcon("stepPrev", 10)
+      .setPosition(0, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f060,#00f060)
+      .registerTooltip("Previous Step")
+      .setGroup(stepControls);
+    c5.addIcon("stepsReverse", 10)
+      .setPosition(50, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f0ec,#00f0ec)
+      .registerTooltip("Reverse Order")
+      .setGroup(stepControls);
+    stepLabel = c5.addTextlabel("stepLabel")
+      .setPosition(0, 50)
+      .setFont(createFont("Terminal", 32))
+      .setGroup(stepControls);
+    stepLabelUpdate();
     
-    sequence = new Sequence();
-    sequence.init();
-    
-    e_length = this.rows * this.cols;
+    c5.addIcon("stepCopy", 10)
+      .setPosition(100, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f0fe,#00f0fe)
+      .registerTooltip("Copy Step")
+      .setGroup(stepControls);
+    c5.addIcon("stepAdd", 10)
+      .setPosition(150, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f196,#00f196)
+      .registerTooltip("Add Step")
+      .setGroup(stepControls);
+    c5.addIcon("stepNext", 10)
+      .setPosition(200, 0)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f061,#00f061)
+      .registerTooltip("Next Step")
+      .setGroup(stepControls);
   }
   
   void icon(boolean theValue) {
@@ -109,8 +157,10 @@ class EditorController extends SimGridController {
     load.setVisible(false);
     newseq.setVisible(false);
     cw.setVisible(false);
+    cb.g.setVisible(false);
     paletteList.list.setVisible(false);
     iconStrip.setVisible(false);
+    stepControls.setVisible(false);
   }
   
   void show() {
@@ -118,8 +168,14 @@ class EditorController extends SimGridController {
     load.setVisible(true);
     newseq.setVisible(true);
     cw.setVisible(true);
+    cb.g.setVisible(true);
     paletteList.list.setVisible(true);
     iconStrip.setVisible(true);
+    stepControls.setVisible(true);
+  }
+  
+  void stepLabelUpdate() {
+    stepLabel.setText(str(sequence.step+1) + " of " + str(sequence.length()));
   }
   
   void draw() {
@@ -137,7 +193,11 @@ class EditorController extends SimGridController {
     load.setPosition(140, height-50);
     newseq.setPosition(260, height-50);
     iconStrip.setPosition(0, height * .1);
-    iconStrip.setSize(int(width * .25), int(height * .5));
+    iconStrip.setSize(int(width * .25), int(height * .2));
+    stepControls.setPosition(0, height * .3);
+    stepControls.setSize(int(width * .25), int(height * .2));
+    
+    stepLabelUpdate();
     
     stroke(255);
     int iP = 0;
@@ -184,6 +244,17 @@ class EditorController extends SimGridController {
         sequence.shiftData(10);
       } else if (theEvent.isFrom(c5.get(Icon.class, "flipY"))) {
         sequence.flipData();
+        // stepControls start here
+      } else if (theEvent.isFrom(c5.get(Icon.class, "stepPrev"))) {
+        sequence.prevStep();
+      } else if (theEvent.isFrom(c5.get(Icon.class, "stepNext"))) {
+        sequence.nextStep();
+      } else if (theEvent.isFrom(c5.get(Icon.class, "stepAdd"))) {
+        sequence.addStep();
+      } else if (theEvent.isFrom(c5.get(Icon.class, "stepCopy"))) {
+        sequence.copyStep();
+      } else if (theEvent.isFrom(c5.get(Icon.class, "stepsReverse"))) {
+        sequence.reverseSteps();
       }
     }
   }

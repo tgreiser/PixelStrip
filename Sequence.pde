@@ -48,6 +48,13 @@ class Sequence {
     initStep(0);
   }
   
+  /*
+  Number of steps
+  */
+  int length() {
+    return data.length;
+  }
+  
   void initStep(int iS) {
     for (int iX = 0; iX < data[iS].length; iX++) {
       data[iS][iX] = #000000;
@@ -113,6 +120,11 @@ class Sequence {
     initStep(data.length - 1);
   }
   
+  void copyStep() {
+    addStep();
+    arrayCopy(data[data.length - 2], data[data.length - 1]);
+  }
+  
   void prevStep() {
     if (step > 0) {
       step--;
@@ -122,6 +134,18 @@ class Sequence {
   void nextStep() {
     if (step < data.length - 1) {
       step++;
+    }
+  }
+  
+  /*
+  Change the order of the steps so they are reversed
+  */
+  void reverseSteps() {
+    color[][] tempdata = new color[data.length][grid.cols];
+    arrayCopy(data, tempdata);
+    for (int iX = 0; iX < data.length; iX++) {
+      println(str(data.length - iX - 1) + " into " + str(iX));
+      data[iX] = tempdata[data.length - iX - 1];
     }
   }
   

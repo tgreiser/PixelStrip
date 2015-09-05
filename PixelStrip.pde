@@ -58,7 +58,7 @@ void setup() {
     println(monitor.x + " " + monitor.y + " " + monitor.width + " " + monitor.height);
     size(monitor.width, monitor.height);
   } else {
-    size(1600, 1000);
+    size(800, 600);
     if (frame != null) {
       frame.setResizable(true);
     }
