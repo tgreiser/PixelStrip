@@ -200,12 +200,12 @@ class PlayGridController extends SimGridController {
   void setup(PApplet _app) {
     super.setup(_app);
     
-    decaySlider = new MySlider(c5, "Decay", new PVector(300, 620), new PVector(50, 320));
+    decaySlider = new MySlider(c5, "Decay", new PVector(300, 670), new PVector(50, 320));
     decaySlider.s.setMax(0.333);
     grid.setFont(decaySlider.s.getCaptionLabel());
     grid.setFont(decaySlider.s.getValueLabel());
     
-    cbOptions = new MyCheckbox(c5, "Options", new PVector(5, 900), new PVector(60, 40));
+    cbOptions = new MyCheckbox(c5, "Options", new PVector(5, 950), new PVector(60, 40));
     cbOptions.cb.addItem(" Enable LEDs", 0);
     //cbOptions.cb.toggle(0);
     grid.setFont(cbOptions.cb.getItem(0).getCaptionLabel());
@@ -222,10 +222,10 @@ class PlayGridController extends SimGridController {
     this.h = height * .667;
     sh = this.h / rows;
     
-    decaySlider.s.setPosition(width * .25, height * .667 + 16);
-    decaySlider.s.setSize(50, int(height * .25));
+    decaySlider.s.setPosition(width - 120, height * .667 + 16);
+    decaySlider.s.setSize(50, int(height * .2));
     
-    cbOptions.cb.setPosition(5, height - 100);
+    cbOptions.cb.setPosition(5, height - 50);
     
     super.draw();
     if (millis() - this.last > 20000) {
