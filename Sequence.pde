@@ -154,6 +154,12 @@ class Sequence {
     data[step][iP] = c;
   }
   
+  void fill(color c) {
+    for (int iX = 0; iX < data[step].length; iX++) {
+      addPixel(iX, c);
+    }
+  }
+  
   void removePixel(int iP) {
     data[step][iP] = #000000;
   }

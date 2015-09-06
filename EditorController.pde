@@ -11,6 +11,7 @@ class EditorController extends SimGridController {
   Group iconStrip;
   Group stepControls;
   Textlabel stepLabel;
+  Icon fill;
   color _c;
   int e_length = 0;
   
@@ -50,6 +51,15 @@ class EditorController extends SimGridController {
     cw = c5.addColorWheel("color picker", int(width * .5), int(height * .1), height / 5)
           .setRGB(this._c)
           ;
+          
+    fill = c5.addIcon("fill", 10)
+      .setPosition(width * .5 + height / 5, height * .1)
+      .setSize(40, 40)
+      .setFont(createFont("fontawesome-webfont.ttf", 40))
+      .setFontIcons(#00f043,#00f043)
+      .registerTooltip("Fill with current color")
+      ;
+    
     cb = new ColorBin(c5, "Color History / Palette", new PVector(0, 0), new PVector(0, 0));
     
     iconStrip = c5.addGroup("Pattern Controls")
@@ -161,6 +171,7 @@ class EditorController extends SimGridController {
     paletteList.list.setVisible(false);
     iconStrip.setVisible(false);
     stepControls.setVisible(false);
+    fill.setVisible(false);
   }
   
   void show() {
@@ -172,6 +183,7 @@ class EditorController extends SimGridController {
     paletteList.list.setVisible(true);
     iconStrip.setVisible(true);
     stepControls.setVisible(true);
+    fill.setVisible(true);
   }
   
   void stepLabelUpdate() {
@@ -196,6 +208,7 @@ class EditorController extends SimGridController {
     iconStrip.setSize(int(width * .25), int(height * .2));
     stepControls.setPosition(0, height * .3);
     stepControls.setSize(int(width * .25), int(height * .2));
+    fill.setPosition(width * .5 + height / 5, height * .1);
     
     stepLabelUpdate();
     
@@ -255,6 +268,9 @@ class EditorController extends SimGridController {
         sequence.copyStep();
       } else if (theEvent.isFrom(c5.get(Icon.class, "stepsReverse"))) {
         sequence.reverseSteps();
+      } else if (theEvent.isFrom(fill)) {
+        sequence.fill(this._c);
+        cb.add(this._c);
       }
     }
   }

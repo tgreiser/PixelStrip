@@ -53,15 +53,13 @@ class GridController extends Controller {
     if (s.delay < 1) { s.delay = 1; }
     
     // need to figure out the offset
-    // compare start position (PVector) against sequence.initial_pixel (0-99)
-    //int pstart = position.X * 10 + position.Y;
     s.offsetRows = int(position.y) - this.calcRow(s.initial_pixel);
     s.offsetCols = int(position.x) - this.calcCol(s.initial_pixel);
     s.offset = s.offsetCols + (this.cols * s.offsetRows);
     
-    //println("initial Y:" + this.calcRow(s.initial_pixel) + " initX: " + this.calcCol(s.initial_pixel));
-    //println("posY: " + str(int(position.y)) + " posX: " + position.x);
-    //println("offset: " + str(s.offset) + " co: " + str(s.offsetCols) + " ro: " + str(s.offsetRows) + " flipX: " + flipX + " flipY: " + flipY);
+    println("initial Y:" + this.calcRow(s.initial_pixel) + " initX: " + this.calcCol(s.initial_pixel));
+    println("posY: " + str(int(position.y)) + " posX: " + position.x);
+    println("offset: " + str(s.offset) + " co: " + str(s.offsetCols) + " ro: " + str(s.offsetRows) + " flipX: " + flipX + " flipY: " + flipY);
     
     // s.offset...
     sequences.add(s);
@@ -156,12 +154,9 @@ class SimGridController extends GridController {
     stroke(255);
     int iP = 0;
     int seq_size = sequences.size();
-    println("Getting steps...");
-    
     for (int iX = 0; iX < seq_size; iX++) {
       sequences.get(iX).getStep();
     }
-    println("Got steps " + str(seq_size));
     
     for (int iR = 0; iR < rows; iR++) {
       for (int iC = 0; iC < cols; iC++) {
